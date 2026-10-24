@@ -5,7 +5,7 @@
     <title>Cargando Servidor</title>
     <style>
         body {
-            background-color: #111; /* Color de fondo de tu pantalla */
+            background-color: #111; 
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -14,8 +14,8 @@
             height: 100vh;
             margin: 0;
         }
-        /* Oculta el video sin usar display:none para que YouTube no detenga la carga */
-        .video-oculto {
+        /* Contenedor invisible para el video */
+        #reproductor-youtube {
             position: absolute;
             width: 1px;
             height: 1px;
@@ -26,14 +26,40 @@
     </style>
 </head>
 <body>
-    <!-- Aquí puedes poner tu logo o texto de bienvenida -->
     <h1>Cargando...</h1>
     
-    <!-- Reproductor oculto -->
-    <iframe class="video-oculto" 
-        src="https://www.youtube.com/embed/T8RTE4ZHhOU?autoplay=1&loop=1&playlist=T8RTE4ZHhOU&controls=0" 
-        allow="autoplay" 
-        frameborder="0">
-    </iframe>
+    <!-- Este div vacío es donde JavaScript insertará el video -->
+    <div id="reproductor-youtube"></div>
+
+    <script>
+        // 1. Cargar la API de YouTube
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // 2. Configurar el reproductor
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('reproductor-youtube', {
+                videoId: 'T8RTE4ZHhOU', // El ID de "Mi Zapatico"
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'T8RTE4ZHhOU' // Necesario para que el loop funcione
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        // 3. Bajar el volumen y darle play
+        function onPlayerReady(event) {
+            event.target.setVolume(15); // VOLUMEN: Cambia este número (0 a 100)
+            event.target.playVideo();
+        }
+    </script>
 </body>
 </html>
