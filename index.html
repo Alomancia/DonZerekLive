@@ -67,12 +67,12 @@
     
     <!-- 3. Contenedor de carga con GIFs -->
     <div class="contenedor-carga">
-        <!-- GIF Izquierdo (Reemplaza el link en 'src' por tu propio GIF) -->
+        <!-- GIF Izquierdo -->
         <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3ljdTMwYmR4M2VicXdxajVzZ3B5N2Fpb2drbGh5eGdnaGZobjZpdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/piJXo6lwZH3EqYu81i/giphy.gif" alt="Cargando" class="gif-carga">
         
         <div class="texto-carga">Cargando...</div>
         
-        <!-- GIF Derecho (Reemplaza el link en 'src' por tu propio GIF) -->
+        <!-- GIF Derecho -->
         <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3FodWhka3lxaTVqMmZzaGRvdGp3eTcweTEzajQ1ZjR3bzdrY2R5ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/DH1Au7j1gCGxGOkvUm/giphy.gif" alt="Cargando" class="gif-carga">
     </div>
     
@@ -80,22 +80,34 @@
     <div id="reproductor-youtube"></div>
 
     <script>
-        // 1. Cargar la API de YouTube
+        // 1. LISTA DE VIDEOS ALEATORIOS
+        // Añade aquí los IDs de los videos que quieras. Siempre entre comillas simples y separados por comas.
+        var listaDeVideos = [
+            'T8RTE4ZHhOU', // Mi Zapatico
+            'QUH0_vbeggQ',  // Reemplaza por otro ID
+            'MobkO51msMI',  // Reemplaza por otro ID  
+            'v9feI1ODD-g'   // Puedes agregar los que quieras
+        ];
+
+        // 2. Elegir un video al azar de la lista
+        var videoAleatorio = listaDeVideos[Math.floor(Math.random() * listaDeVideos.length)];
+
+        // 3. Cargar la API de YouTube
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // 2. Configurar el reproductor
+        // 4. Configurar el reproductor con el video aleatorio
         var player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('reproductor-youtube', {
-                videoId: 'T8RTE4ZHhOU', // El ID de "Mi Zapatico"
+                videoId: videoAleatorio, // Usa la variable con el video al azar
                 playerVars: {
                     'autoplay': 1,
                     'controls': 0,
                     'loop': 1,
-                    'playlist': 'T8RTE4ZHhOU' 
+                    'playlist': videoAleatorio // Asegura que el mismo video se repita en loop
                 },
                 events: {
                     'onReady': onPlayerReady
@@ -103,9 +115,9 @@
             });
         }
 
-        // 3. Bajar el volumen y darle play
+        // 5. Bajar el volumen y darle play
         function onPlayerReady(event) {
-            event.target.setVolume(1); 
+            event.target.setVolume(1); // El volumen que dejaste
             event.target.playVideo();
         }
     </script>
