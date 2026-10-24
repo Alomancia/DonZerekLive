@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cargando Servidor</title>
+    <style>
+        body {
+            background-color: #111; /* Color de fondo de tu pantalla */
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        /* Oculta el video sin usar display:none para que YouTube no detenga la carga */
+        .video-oculto {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0.01;
+            pointer-events: none;
+            z-index: -999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Aquí puedes poner tu logo o texto de bienvenida -->
+    <h1>Cargando...</h1>
+    
+    <!-- Reproductor oculto -->
+    <iframe class="video-oculto" 
+        src="https://www.youtube.com/embed/ID_DEL_VIDEO?autoplay=1&loop=1&playlist=ID_DEL_VIDEO&controls=0" 
+        allow="autoplay" 
+        frameborder="0">
+    </iframe>
+</body>
+</html>
