@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Cargando Servidor</title>
-    <!-- 1. Importando la fuente moderna desde Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
     
     <style>
         body {
             background-color: #111; 
             color: white;
-            /* Aplicamos la nueva fuente a toda la página */
             font-family: 'Montserrat', sans-serif;
             display: flex;
-            /* Flex-direction column apila los elementos de arriba hacia abajo (Título y luego Cargando) */
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -21,107 +18,63 @@
             margin: 0;
         }
 
-        /* Estilo exclusivo para el título de tu servidor */
         .titulo-servidor {
-            font-size: 4rem; /* Tamaño de letra muy grande */
-            margin-bottom: 40px; /* Separación hacia abajo con los GIFs */
-            text-transform: uppercase; /* Fuerza a que todo sea mayúscula */
-            letter-spacing: 3px; /* Separa un poco las letras para que se vea mejor */
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Sombra suave para darle profundidad */
+            font-size: 4rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
         }
 
-        /* Esta caja invisible pone los GIFs y el texto en la misma línea */
         .contenedor-carga {
             display: flex;
             align-items: center;
-            gap: 25px; /* Espacio de separación entre los gifs y el texto */
+            gap: 25px;
         }
 
-        /* Estilo para el "Cargando..." */
         .texto-carga {
             font-size: 2rem;
         }
 
-        /* Estilo para ajustar el tamaño de los GIFs */
         .gif-carga {
-            width: 60px; /* Puedes hacer los GIFs más grandes o pequeños cambiando este número */
+            width: 60px;
             height: auto;
-            border-radius: 8px; /* Redondea un poco las esquinas de los GIFs */
-        }
-
-        /* Contenedor invisible para el video de YouTube */
-        #reproductor-youtube {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            opacity: 0.01;
-            pointer-events: none;
-            z-index: -999;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
     
-    <!-- 2. Reemplaza ESTE TEXTO por el nombre real de tu servidor -->
     <div class="titulo-servidor">DonZerekLive</div>
     
-    <!-- 3. Contenedor de carga con GIFs -->
     <div class="contenedor-carga">
-        <!-- GIF Izquierdo -->
         <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3ljdTMwYmR4M2VicXdxajVzZ3B5N2Fpb2drbGh5eGdnaGZobjZpdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/piJXo6lwZH3EqYu81i/giphy.gif" alt="Cargando" class="gif-carga">
-        
         <div class="texto-carga">Cargando...</div>
-        
-        <!-- GIF Derecho -->
         <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3FodWhka3lxaTVqMmZzaGRvdGp3eTcweTEzajQ1ZjR3bzdrY2R5ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/DH1Au7j1gCGxGOkvUm/giphy.gif" alt="Cargando" class="gif-carga">
     </div>
     
-    <!-- Reproductor oculto -->
-    <div id="reproductor-youtube"></div>
+    <!-- Reproductor de audio nativo (invisible al no tener el atributo 'controls') -->
+    <audio id="musica-fondo" autoplay loop></audio>
 
     <script>
-        // 1. LISTA DE VIDEOS ALEATORIOS
-        // Añade aquí los IDs de los videos que quieras.
-        var listaDeVideos = [
-            'T8RTE4ZHhOU', // Mi Zapatico
-            'QUH0_vbeggQ',  // Reemplaza por otro ID
-            'MobkO51msMI',  // Reemplaza por otro ID  
-            'v9feI1ODD-g',   // Puedes agregar los que quieras
-            'W6ke2robiFw',
-            'EKO5HHMA4rg'
+        // 1. LISTA DE CANCIONES EN TU CARPETA "songs"
+        // Escribe los nombres exactos de tus archivos (respetando mayúsculas, minúsculas y espacios)
+        var listaDeCanciones = [
+            'songs/gozalo.mp3',
+            'songs/gta.mp3',
+            'songs/leche.mp3',
+            'songs/nino_dios.mp3',
+            'songs/undertale.mp3',
+            'songs/zapatico.mp3'
         ];
 
-        // 2. Elegir un video al azar de la lista
-        var videoAleatorio = listaDeVideos[Math.floor(Math.random() * listaDeVideos.length)];
+        // 2. Elegir una canción al azar
+        var cancionAleatoria = listaDeCanciones[Math.floor(Math.random() * listaDeCanciones.length)];
 
-        // 3. Cargar la API de YouTube
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        // 4. Configurar el reproductor con el video aleatorio
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('reproductor-youtube', {
-                videoId: videoAleatorio, // Usa la variable con el video al azar
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': videoAleatorio // Asegura que el mismo video se repita en loop
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        // 5. Bajar el volumen y darle play
-        function onPlayerReady(event) {
-            event.target.setVolume(1); // El volumen que dejaste
-            event.target.playVideo();
-        }
+        // 3. Asignar la ruta, ajustar volumen y reproducir
+        var reproductor = document.getElementById('musica-fondo');
+        reproductor.src = cancionAleatoria;
+        reproductor.volume = 0.05; // VOLUMEN: va de 0.0 a 1.0 (0.05 equivale al 5%)
     </script>
 </body>
 </html>
