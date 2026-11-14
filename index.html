@@ -103,7 +103,7 @@
         var cancionAleatoria = listaDeCanciones[Math.floor(Math.random() * listaDeCanciones.length)];
         var reproductor = document.getElementById('musica-fondo');
         reproductor.src = cancionAleatoria;
-        reproductor.volume = 0.05;
+        reproductor.volume = 0.01;
 
         // --- 2. OBTENER PERFIL DE STEAM VÍA PLAYERDB API ---
         var parametrosUrl = new URLSearchParams(window.location.search);
