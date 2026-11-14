@@ -23,7 +23,7 @@
             position: absolute;
             top: 30px;
             left: 30px;
-            display: none; /* Se oculta si se abre fuera de GMod sin SteamID */
+            display: none;
             align-items: center;
             gap: 15px;
             background-color: rgba(255, 255, 255, 0.08);
@@ -35,8 +35,10 @@
         .avatar-jugador {
             width: 50px;
             height: 50px;
-            border-radius: 50%; /* Foto circular */
+            border-radius: 50%;
             border: 2px solid white;
+            background-color: #222;
+            object-fit: cover;
         }
 
         .nombre-jugador {
@@ -73,7 +75,8 @@
 
     <!-- Contenedor del perfil en la esquina superior izquierda -->
     <div id="caja-perfil" class="perfil-jugador">
-        <img id="foto-steam" class="avatar-jugador" src="" alt="Avatar">
+        <!-- Avatar oficial por defecto de Steam para que nunca se vea roto -->
+        <img id="foto-steam" class="avatar-jugador" src="https://avatars.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg" alt="Avatar">
         <div id="nombre-steam" class="nombre-jugador">Cargando perfil...</div>
     </div>
     
@@ -103,34 +106,46 @@
         reproductor.src = cancionAleatoria;
         reproductor.volume = 0.05;
 
-        // --- 2. OBTENER PERFIL DE STEAM ---
-        // Leer el parámetro 'steamid' que GMod envía automáticamente en la URL
+        // --- 2. OBTENER PERFIL DE STEAM CON RESPALDO ---
         var parametrosUrl = new URLSearchParams(window.location.search);
         var steamId = parametrosUrl.get('steamid');
 
+        function procesarXMLSteam(textoXml) {
+            var parser = new DOMParser();
+            var xmlDoc = parser.parseFromString(textoXml, "text/xml");
+            
+            var nombre = xmlDoc.getElementsByTagName("steamID")[0]?.textContent;
+            var avatar = xmlDoc.getElementsByTagName("avatarFull")[0]?.textContent;
+
+            if (nombre && avatar) {
+                document.getElementById('nombre-steam').innerText = nombre;
+                document.getElementById('foto-steam').src = avatar;
+                return true;
+            }
+            return false;
+        }
+
         if (steamId) {
-            // Mostramos la tarjeta en la esquina
             document.getElementById('caja-perfil').style.display = 'flex';
             document.getElementById('nombre-steam').innerText = "Bienvenido, jugador";
 
-            // Consultamos los datos públicos usando una API puente gratuita para Steam
-            fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://steamcommunity.com/profiles/' + steamId + '/?xml=1'))
-                .then(response => response.json())
-                .then(data => {
-                    // Convertimos la respuesta XML de Steam para leer el nombre y el avatar
-                    var parser = new DOMParser();
-                    var xmlDoc = parser.parseFromString(data.contents, "text/xml");
-                    
-                    var nombre = xmlDoc.getElementsByTagName("steamID")[0]?.textContent;
-                    var avatar = xmlDoc.getElementsByTagName("avatarFull")[0]?.textContent;
+            var urlSteam = 'https://steamcommunity.com/profiles/' + steamId + '/?xml=1';
 
-                    if (nombre && avatar) {
-                        document.getElementById('nombre-steam').innerText = nombre;
-                        document.getElementById('foto-steam').src = avatar;
-                    }
+            // Intento 1: Proxy corsproxy.io (más rápido y estable con Steam)
+            fetch('https://corsproxy.io/?' + encodeURIComponent(urlSteam))
+                .then(res => {
+                    if (!res.ok) throw new Error("Fallo Proxy 1");
+                    return res.text();
                 })
-                .catch(error => {
-                    console.log("No se pudo cargar el perfil de Steam:", error);
+                .then(xml => {
+                    if (!procesarXMLSteam(xml)) throw new Error("XML inválido");
+                })
+                .catch(() => {
+                    // Intento 2 (Respaldo): Proxy codetabs si el primero falla
+                    fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(urlSteam))
+                        .then(res => res.text())
+                        .then(xml => procesarXMLSteam(xml))
+                        .catch(err => console.log("No se pudo obtener el perfil público:", err));
                 });
         }
     </script>
