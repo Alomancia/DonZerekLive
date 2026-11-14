@@ -18,6 +18,32 @@
             margin: 0;
         }
 
+        /* Tarjeta del jugador en la esquina superior izquierda */
+        .perfil-jugador {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            display: none; /* Se oculta si se abre fuera de GMod sin SteamID */
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.08);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .avatar-jugador {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%; /* Foto circular */
+            border: 2px solid white;
+        }
+
+        .nombre-jugador {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
         .titulo-servidor {
             font-size: 4rem;
             margin-bottom: 40px;
@@ -44,6 +70,12 @@
     </style>
 </head>
 <body>
+
+    <!-- Contenedor del perfil en la esquina superior izquierda -->
+    <div id="caja-perfil" class="perfil-jugador">
+        <img id="foto-steam" class="avatar-jugador" src="" alt="Avatar">
+        <div id="nombre-steam" class="nombre-jugador">Cargando perfil...</div>
+    </div>
     
     <div class="titulo-servidor">DonZerekLive</div>
     
@@ -53,12 +85,10 @@
         <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3FodWhka3lxaTVqMmZzaGRvdGp3eTcweTEzajQ1ZjR3bzdrY2R5ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/DH1Au7j1gCGxGOkvUm/giphy.gif" alt="Cargando" class="gif-carga">
     </div>
     
-    <!-- Reproductor de audio nativo (invisible al no tener el atributo 'controls') -->
     <audio id="musica-fondo" autoplay loop></audio>
 
     <script>
-        // 1. LISTA DE CANCIONES EN TU CARPETA "songs"
-        // Escribe los nombres exactos de tus archivos (respetando mayúsculas, minúsculas y espacios)
+        // --- 1. CONFIGURACIÓN DE MÚSICA ---
         var listaDeCanciones = [
             'songs/gozalo.mp3',
             'songs/gta.mp3',
@@ -68,13 +98,41 @@
             'songs/zapatico.mp3'
         ];
 
-        // 2. Elegir una canción al azar
         var cancionAleatoria = listaDeCanciones[Math.floor(Math.random() * listaDeCanciones.length)];
-
-        // 3. Asignar la ruta, ajustar volumen y reproducir
         var reproductor = document.getElementById('musica-fondo');
         reproductor.src = cancionAleatoria;
-        reproductor.volume = 0.05; // VOLUMEN: va de 0.0 a 1.0 (0.05 equivale al 5%)
+        reproductor.volume = 0.05;
+
+        // --- 2. OBTENER PERFIL DE STEAM ---
+        // Leer el parámetro 'steamid' que GMod envía automáticamente en la URL
+        var parametrosUrl = new URLSearchParams(window.location.search);
+        var steamId = parametrosUrl.get('steamid');
+
+        if (steamId) {
+            // Mostramos la tarjeta en la esquina
+            document.getElementById('caja-perfil').style.display = 'flex';
+            document.getElementById('nombre-steam').innerText = "Bienvenido, jugador";
+
+            // Consultamos los datos públicos usando una API puente gratuita para Steam
+            fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://steamcommunity.com/profiles/' + steamId + '/?xml=1'))
+                .then(response => response.json())
+                .then(data => {
+                    // Convertimos la respuesta XML de Steam para leer el nombre y el avatar
+                    var parser = new DOMParser();
+                    var xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                    
+                    var nombre = xmlDoc.getElementsByTagName("steamID")[0]?.textContent;
+                    var avatar = xmlDoc.getElementsByTagName("avatarFull")[0]?.textContent;
+
+                    if (nombre && avatar) {
+                        document.getElementById('nombre-steam').innerText = nombre;
+                        document.getElementById('foto-steam').src = avatar;
+                    }
+                })
+                .catch(error => {
+                    console.log("No se pudo cargar el perfil de Steam:", error);
+                });
+        }
     </script>
 </body>
 </html>
